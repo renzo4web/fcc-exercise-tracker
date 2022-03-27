@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import uniqid from 'uniqid';
 import { FirebaseAdminService } from '../firebase-admin/firebase-admin.service';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
@@ -9,11 +10,20 @@ export class ExerciseService {
   readonly firebaseAdminService: FirebaseAdminService;
 
   async create(createExerciseDto: CreateExerciseDto) {
+    const data: CreateExerciseDto = {
+      ...createExerciseDto,
+      date: !!createExerciseDto?.date
+        ? createExerciseDto.date
+        : new Date().toISOString(),
+      _id: uniqid(),
+    };
+
     await this.firebaseAdminService
       .firestore()
       .collection('exercise')
-      .add(createExerciseDto);
-    return 'This action adds a new exercise';
+      .add(data);
+
+    return data;
   }
 
   findAll() {

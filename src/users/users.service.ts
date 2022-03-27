@@ -1,15 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import uniqid from 'uniqid';
+import { FirebaseAdminService } from '../firebase-admin/firebase-admin.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  @Inject()
+  readonly firebaseAdminService: FirebaseAdminService;
+
+  async create(createUserDto: CreateUserDto) {
+    const user = {
+      ...createUserDto,
+      _id: uniqid(),
+    };
+
+    await this.firebaseAdminService.firestore().collection('users').add(user);
+
+    return user;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return this.firebaseAdminService.getAllDocs('users');
   }
 
   findOne(id: number) {

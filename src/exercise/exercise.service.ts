@@ -27,7 +27,7 @@ export class ExerciseService {
   }
 
   findAll() {
-    return `This action returns all exercise`;
+    return this.firebaseAdminService.getAllDocs('exercise');
   }
 
   findOne(id: number) {

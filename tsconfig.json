@@ -1,0 +1,53 @@
+{
+"compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "paths": {
+      "@api-c3/prisma": [
+        "libs/prisma/src"
+      ],
+      "@api-c3/prisma/*": [
+        "libs/prisma/src/*"
+      ],
+      "@api-c3/query-parser": [
+        "libs/query-parser/src"
+      ],
+      "@api-c3/query-parser/*": [
+        "libs/query-parser/src/*"
+      ],
+      "@api-c3/json-response": [
+        "libs/json-response/src"
+      ],
+      "@api-c3/json-response/*": [
+        "libs/json-response/src/*"
+      ],
+      "@api-c3/swagger": [
+        "libs/swagger/src"
+      ],
+      "@api-c3/swagger/*": [
+        "libs/swagger/src/*"
+      ],
+      "@api-c3/aop": [
+        "libs/aop/src"
+      ],
+      "@api-c3/aop/*": [
+        "libs/aop/src/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

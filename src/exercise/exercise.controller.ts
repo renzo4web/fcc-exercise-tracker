@@ -27,7 +27,7 @@ export class ExerciseController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.exerciseService.findOne(+id);
+    return this.exerciseService.findOne(id);
   }
 
   @Patch(':id')

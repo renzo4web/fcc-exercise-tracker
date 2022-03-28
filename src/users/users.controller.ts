@@ -1,15 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Inject,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateExerciseDto } from '../exercise/dto/create-exercise.dto';
+import { ExerciseService } from '../exercise/exercise.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  @Inject()
+  readonly usersService: UsersService;
+
+  @Inject()
+  readonly exerciseService: ExerciseService;
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Post(':id/exercise')
+  async createExercise(
+    @Param('id') id: string,
+    @Body() createDto: CreateExerciseDto,
+  ) {
+    return await this.exerciseService.create({
+      ...createDto,
+      _id: id,
+    });
+  }
+
+  @Get(':id/logs')
+  async findLogs(@Param('id') id: string) {
+    return await this.usersService.findOneLog(id);
   }
 
   @Get()
@@ -18,13 +49,13 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.usersService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')

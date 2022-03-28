@@ -1,6 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import uniqid from 'uniqid';
 import { FirebaseAdminService } from '../firebase-admin/firebase-admin.service';
+import { UsersService } from '../users/users.service';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 
@@ -9,29 +15,53 @@ export class ExerciseService {
   @Inject()
   readonly firebaseAdminService: FirebaseAdminService;
 
-  async create(createExerciseDto: CreateExerciseDto) {
+  //@Inject()
+  //readonly usersService: UsersService;
+
+  async create(createExerciseDto: any) {
+    const userRef = await this.firebaseAdminService
+      .firestore()
+      .collection('users')
+      .where('_id', '==', createExerciseDto._id)
+      .get();
+
+    const docRef = userRef.docs.map((doc) => doc.data());
+
+    if (!docRef || docRef.length === 0) {
+      throw new NotFoundException('user not found');
+    }
+
     const data: CreateExerciseDto = {
       ...createExerciseDto,
       date: !!createExerciseDto?.date
         ? createExerciseDto.date
-        : new Date().toISOString(),
-      _id: uniqid(),
+        : new Date().toDateString(),
+      _id: docRef[0]._id,
     };
 
     await this.firebaseAdminService
       .firestore()
-      .collection('exercise')
+      .collection(`exercise`)
       .add(data);
 
-    return data;
+    return {
+      ...data,
+      username: docRef[0].username,
+    };
   }
 
-  findAll() {
-    return this.firebaseAdminService.getAllDocs('exercise');
+  async findAll() {
+    return await this.firebaseAdminService.getAllDocs('exercise');
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} exercise`;
+  async findOne(id: string) {
+    const userRef = await this.firebaseAdminService
+      .firestore()
+      .collection('exercise')
+      .where('_id', '==', id)
+      .get();
+
+    return userRef.docs.map((doc) => doc.data());
   }
 
   update(id: number, updateExerciseDto: UpdateExerciseDto) {
